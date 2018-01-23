@@ -107,6 +107,7 @@ function Set-AttributeValue
                         WriteLog -Message $message -EntryType Attempting
                         $Domain = Get-ADDomain -Identity $DomainFQDN -server $DomainFQDN -ErrorAction Stop
                         WriteLog -Message $message -EntryType Succeeded
+                        $GetADObjectParams.Server = $Domain.DNSRoot
                     }
                     catch
                     {
@@ -129,6 +130,7 @@ function Set-AttributeValue
                     $GetADObjectParams.ResultSetSize = $null
                     $GetADObjectParams.SearchBase = $SearchBase
                     $GetADObjectParams.SearchScope = $SearchScope
+                    $GetADObjectParams.Server = GetDomainFQDNFromAnyDN -DistinguishedName $SearchBase
                 }# End SearchBase
             }# End Switch
             #Setup Export Files if $ExportResults is $true
@@ -143,7 +145,7 @@ function Set-AttributeValue
         Process
         {
             $message = $PSCmdlet.MyInvocation.InvocationName + ': Get AD Objects with the Get-ADObject cmdlet.'
-            WriteLog -Message $message -Verbose -EntryType Attempting
+            WriteLog -Message $message -EntryType Attempting
             #region GetObjectToModify
             $ADObjects = @(
                 switch ($PSCmdlet.ParameterSetName)
@@ -179,14 +181,11 @@ function Set-AttributeValue
                     }# End Single
                     'SearchBase'
                     {
-                        #convert dn to a domain fqdn to use for -server param
-
                         Get-ADObject @GetADObjectParams | Select-Object -ExcludeProperty Item,Property* -Property *,@{n='Domain';e={$Domain.DNSRoot}}
                     }# End SearchBase
                     'EntireDomain'
                     {
                         WriteLog -Message "Get Objects from domain $($Domain.dnsroot)" -EntryType Notification
-                        $GetADObjectParams.Server = $Domain.dnsroot
                         Get-ADObject @GetADObjectParams | Select-Object -ExcludeProperty Item,Property* -Property *,@{n='Domain';e={$Domain.DNSroot}}
                     }# End EntireForest
                     'EntireForest'
