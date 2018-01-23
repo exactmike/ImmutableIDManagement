@@ -67,7 +67,7 @@
     
     # Functions to export from this module
     #FunctionsToExport = '*'
-    FunctionsToExport = '*-*'
+    FunctionsToExport = '*-Variable*','Set-AttributeValue'
     
     # Cmdlets to export from this module
     #CmdletsToExport = '*'
