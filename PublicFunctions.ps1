@@ -14,7 +14,7 @@ function Set-AttributeValue
             ,
             # To set the immutable ID on all objects in a SearchBase, specify the SearchBase DistinguishedName.
             [parameter(ParameterSetName = 'SearchBase',Mandatory)]
-            [ValidateScript({Test-Path $_})]
+            #[ValidateScript({Test-Path $_})] #need something more sophisticated to test this path
             [string]$SearchBase
             ,
             # To set the immutable ID on all applicable objects in a forest, specify the forest fqdn
