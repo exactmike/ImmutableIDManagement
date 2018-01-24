@@ -5,12 +5,7 @@ function Set-AttributeValue
         Sets a specified target attribute with the value from a specified source attribute for the specified object(s).
         
         .DESCRIPTION
-        Copies a value from a source attribute to a target attribute for specified objects (via -Identity parameter), 
-        an entire AD domain subtree, an entire domain, or an entire forest.  Can ignore objects that already have a 
-        value in the target attribute. When processing a subtree, domain, or forest the function processes AD objects 
-        which are in objectcategory person or group. Requires you to have already created a connection to Active Directory
-        Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory
-        Provider PSDrive which you want the function to use.  
+        Copies a value from a source attribute to a target attribute for specified objects (via -Identity parameter), an entire AD domain subtree, an entire domain, or an entire forest.  Can ignore objects that already have a value in the target attribute. When processing a subtree, domain, or forest the function processes AD objects which are in objectcategory person or group. Requires you to have already created a connection to Active Directory Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory Provider PSDrive which you want the function to use.
        
         .EXAMPLE
         Set-Location AD:\
@@ -25,9 +20,7 @@ function Set-AttributeValue
         Set-IIDAttributeValue -Identity 56b43a27-b029-40f4-b451-709185855d4b -OutputFolderPath C:\SharedData\ImmutableIDResults -Verbose -WhatIf
         
         .Notes
-        Requires you to have already created a PSDrive connection to Active Directory
-        Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory
-        Provider PSDrive which you want the function to use.
+        Requires you to have already created a PSDrive connection to Active Directory with the Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory Provider PSDrive which you want the function to use.
         
         #>
         [cmdletbinding(DefaultParameterSetName='Single',SupportsShouldProcess=$true)]
