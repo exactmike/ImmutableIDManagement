@@ -25,7 +25,7 @@ function Set-AttributeValue
         Set-IIDAttributeValue -Identity 56b43a27-b029-40f4-b451-709185855d4b -OutputFolderPath C:\SharedData\ImmutableIDResults -Verbose -WhatIf
         
         .Notes
-        Requires you to have already created a connection to Active Directory
+        Requires you to have already created a PSDrive connection to Active Directory
         Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory
         Provider PSDrive which you want the function to use.
         
