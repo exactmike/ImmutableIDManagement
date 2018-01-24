@@ -56,4 +56,4 @@ function Set-TargetObjectFromSourceObjectCrossForest
         }
         Pop-Location
     }
-#end function Join-ADObjectByImmutableID
+#end function Set-TargetObjectFromSourceObjectCrossForest
