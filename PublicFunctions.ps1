@@ -257,10 +257,13 @@ function Set-AttributeValue
             if ($OnlyReport -eq $true)
             {
                 WriteLog -Message "Found $($adobjects.count) AD Objects that do not have a value in ImmutableIDAttribute $immutableIDAttribute" -EntryType Notification
-                $attributeset = @('ObjectGUID','Domain','ObjectClass','DistinguishedName',@{n='TimeStamp';e={$TimeStamp}},@{n='Status';e={'ReportOnly-NoUpdatesPerformed'}},@{n='ErrorString';e={'None'}},@{n='SourceAttribute';e={$ImmutableIDAttributeSource}},@{n='TargetAttribute';e={$ImmutableIDAttribute}})
-                if ($ImmutableIDAttributeSource -notin $attributeset) {$attributeset += $ImmutableIDAttributeSource}
-                if ($ImmutableIDAttribute -notin $attributeset) {$attributeset += $ImmutableIDAttribute}
-                $ADObjects | Select-Object -Property $attributeset | Export-Csv -Path $OutputFilePath -Encoding UTF8 -NoTypeInformation
+                if ($null -ne $OutputFolderPath)
+                {
+                    $attributeset = @('ObjectGUID','Domain','ObjectClass','DistinguishedName',@{n='TimeStamp';e={$TimeStamp}},@{n='Status';e={'ReportOnly-NoUpdatesPerformed'}},@{n='ErrorString';e={'None'}},@{n='SourceAttribute';e={$ImmutableIDAttributeSource}},@{n='TargetAttribute';e={$ImmutableIDAttribute}})
+                    if ($ImmutableIDAttributeSource -notin $attributeset) {$attributeset += $ImmutableIDAttributeSource}
+                    if ($ImmutableIDAttribute -notin $attributeset) {$attributeset += $ImmutableIDAttribute}
+                    $ADObjects | Select-Object -Property $attributeset | Export-Csv -Path $OutputFilePath -Encoding UTF8 -NoTypeInformation    
+                }
             }#end if
             else #Actually process (if -whatif was not used)
             {
