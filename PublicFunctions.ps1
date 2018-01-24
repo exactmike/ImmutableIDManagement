@@ -1,5 +1,35 @@
 function Set-AttributeValue
     {
+        <#
+        .SYNOPSIS
+        Sets a specified target attribute with the value from a specified source attribute for the specified object(s).
+        
+        .DESCRIPTION
+        Copies a value from a source attribute to a target attribute for specified objects (via -Identity parameter), 
+        an entire AD domain subtree, an entire domain, or an entire forest.  Can ignore objects that already have a 
+        value in the target attribute. When processing a subtree, domain, or forest the function processes AD objects 
+        which are in objectcategory person or group. Requires you to have already created a connection to Active Directory
+        Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory
+        Provider PSDrive which you want the function to use.  
+       
+        .EXAMPLE
+        Set-Location AD:\
+        Set-IIDAttributeValue -SearchScope SubTree -SearchBase 'OU=Users,OU=Managed,DC=corporate,DC=contoso,DC=com' -OnlyReport -ExportResults -OnlyUpdateNull -OutputFolderPath C:\SharedData\ImmutableIDResults -WriteLog
+        
+        .EXAMPLE
+        Set-Location AD:\
+        Set-IIDAttributeValue -DomainFQDN corporate.contoso.com -ExportResults -OnlyUpdateNull -OutputFolderPath C:\ImmutableIDResults -WriteLog -Verbose
+
+        .EXAMPLE
+        Set-Location AD:\
+        Set-IIDAttributeValue -Identity 56b43a27-b029-40f4-b451-709185855d4b -OutputFolderPath C:\SharedData\ImmutableIDResults -Verbose -WhatIf
+        
+        .Notes
+        Requires you to have already created a connection to Active Directory
+        Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory
+        Provider PSDrive which you want the function to use.
+        
+        #>
         [cmdletbinding(DefaultParameterSetName='Single',SupportsShouldProcess=$true)]
         param
         (
@@ -35,22 +65,40 @@ function Set-AttributeValue
             # Don't modify any objects, only report those that were identified to update. 
             [switch]$OnlyReport
             ,
-            # Export CSV files with the success and failure results
-            [bool]$ExportResults = $true
+            # Export CSV files to the OutputFolderPath with the success and failure results
+            [switch]$ExportResults
+            ,
+            # Write Operational and Error Logs to the OutputFolderPath
+            [switch]$WriteLog
             ,
             # Update only the AD Objects found where the specified Immutable ID attribute is currently NULL.  
             [switch]$OnlyUpdateNull
             ,
             # Specify the output folder/directory for the function to use for log an csv output files. The location must already exist and be writeable.  Output files are date stamped and therefore in most cases should not conflict with any existing files. 
-            [Parameter(Mandatory)]
+            [Parameter()]
             [ValidateScript({TestIsWriteableDirectory -Path $_})]
             [String]$OutputFolderPath
         )#end param
         Begin
         {
             $TimeStamp = Get-Date -Format yyyyMMdd-HHmmss
-            $script:LogPath = Join-Path -path $OutputFolderPath -ChildPath $($TimeStamp + 'SetImmutableIDAttributeValueOperations.log')
-            $script:ErrorLogPath = Join-Path -path $OutputFolderPath -ChildPath $($TimeStamp + 'SetImmutableIDAttributeValueOperations-ERRORS.log')
+            if ($WriteLogs -eq $true -or $ExportResults -eq $true)
+            {
+                if ($null -eq $OutputFolderPath)
+                {
+                    throw('You must specify the OutputFolderPath parameter when using the WriteLogs or ExportResults paramters.')
+                }
+            }
+            if ($WriteLogs -eq $true)
+            {
+                $script:LogPreference = $true
+                $script:LogPath = Join-Path -path $OutputFolderPath -ChildPath $($TimeStamp + 'SetImmutableIDAttributeValueOperations.log')
+                $script:ErrorLogPath = Join-Path -path $OutputFolderPath -ChildPath $($TimeStamp + 'SetImmutableIDAttributeValueOperations-ERRORS.log')    
+            }
+            else
+            {
+                $script:LogPreference = $false    
+            }
             WriteLog -Message "Command Line: $($MyInvocation.line)" -EntryType Notification
             #Check Current PSDrive Location: Should be AD, Should be Root of the PSDrive
             Set-Location -Path \
