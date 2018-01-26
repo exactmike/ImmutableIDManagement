@@ -82,7 +82,7 @@ function Set-AttributeValue
                     throw('You must specify the OutputFolderPath parameter when using the WriteLogs or ExportResults paramters.')
                 }
             }
-            if ($WriteLogs -eq $true)
+            if ($WriteLog -eq $true)
             {
                 $script:LogPreference = $true
                 $script:LogPath = Join-Path -path $OutputFolderPath -ChildPath $($TimeStamp + 'SetImmutableIDAttributeValueOperations.log')
