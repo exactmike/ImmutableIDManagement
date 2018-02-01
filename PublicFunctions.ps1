@@ -75,7 +75,7 @@ function Set-AttributeValue
         Begin
         {
             $TimeStamp = Get-Date -Format yyyyMMdd-HHmmss
-            if ($WriteLogs -eq $true -or $ExportResults -eq $true)
+            if ($WriteLog -eq $true -or $ExportResults -eq $true)
             {
                 if ($null -eq $OutputFolderPath)
                 {
@@ -90,7 +90,7 @@ function Set-AttributeValue
             }
             else
             {
-                $script:LogPreference = $false    
+                $script:LogPreference = $false
             }
             WriteLog -Message "Command Line: $($MyInvocation.line)" -EntryType Notification
             #Check Current PSDrive Location: Should be AD, Should be Root of the PSDrive
@@ -250,13 +250,18 @@ function Set-AttributeValue
             if ($OnlyReport -eq $true)
             {
                 WriteLog -Message "Found $($adobjects.count) AD Objects that do not have a value in ImmutableIDAttribute $immutableIDAttribute" -EntryType Notification
-                if ($null -ne $OutputFolderPath)
+                $attributeset = @('ObjectGUID','Domain','ObjectClass','DistinguishedName',@{n='TimeStamp';e={$TimeStamp}},@{n='Status';e={'ReportOnly-NoUpdatesPerformed'}},@{n='ErrorString';e={'None'}},@{n='SourceAttribute';e={$ImmutableIDAttributeSource}},@{n='TargetAttribute';e={$ImmutableIDAttribute}})
+                if ($null -eq $OutputFolderPath)
                 {
-                    $attributeset = @('ObjectGUID','Domain','ObjectClass','DistinguishedName',@{n='TimeStamp';e={$TimeStamp}},@{n='Status';e={'ReportOnly-NoUpdatesPerformed'}},@{n='ErrorString';e={'None'}},@{n='SourceAttribute';e={$ImmutableIDAttributeSource}},@{n='TargetAttribute';e={$ImmutableIDAttribute}})
+                    $ADObjects | Select-Object -Property $attributeset
+                }
+                elseif ($ExportResults -eq $true)
+                {
                     if ($ImmutableIDAttributeSource -notin $attributeset) {$attributeset += $ImmutableIDAttributeSource}
                     if ($ImmutableIDAttribute -notin $attributeset) {$attributeset += $ImmutableIDAttribute}
-                    $ADObjects | Select-Object -Property $attributeset | Export-Csv -Path $OutputFilePath -Encoding UTF8 -NoTypeInformation    
+                    $ADObjects | Select-Object -Property $attributeset | Export-Csv -Path $OutputFilePath -Encoding UTF8 -NoTypeInformation
                 }
+
             }#end if
             else #Actually process (if -whatif was not used)
             {
@@ -311,7 +316,7 @@ function Set-AttributeValue
                 {
                     $FailuresCount = $AllResults.Where({$_.Status -eq 'Failed'}).count
                     $SuccessesCount = $AllResults.Where({$_.Status -eq 'Succeeded'}).count
-                    Export-Data -DataToExportTitle $ExportName -DataToExport $AllResults -DataType csv
+                    Export-Csv -InputObject $AllResults -Encoding UTF8 -Path $OutputFilePath -NoTypeInformation
                 }
                 WriteLog -message "Set-ImmutableIDAttributeValue Set AD Object Results: Total Attempts: $($AllResults.Count); Successes: $SuccessesCount; Failures: $FailuresCount."
                 WriteLog -Message "Set-ImmutableIDAttributeValue Operations Completed."
