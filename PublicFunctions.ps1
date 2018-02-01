@@ -23,7 +23,7 @@ function Set-AttributeValue
         Requires you to have already created a PSDrive connection to Active Directory with the Windows PowerShell ActiveDirectory module and to set the location of the PowerShell session to the Active Directory Provider PSDrive which you want the function to use.
         
         #>
-        [cmdletbinding(DefaultParameterSetName='Single',SupportsShouldProcess=$true)]
+        [cmdletbinding(DefaultParameterSetName='Identity',SupportsShouldProcess=$true)]
         param
         (
             # To set the immutable ID on all applicable objects in a forest, specify the forest fqdn
