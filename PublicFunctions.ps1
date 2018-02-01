@@ -55,7 +55,7 @@ function Set-AttributeValue
             # Set the Attribute to be used as the source of the value with which to set the ImmutableID source attribute. Default is ObjectGUID
             [string]$ImmutableIDAttributeSource = 'ObjectGUID'
             ,
-            # Don't modify any objects, only report those that were identified to update. 
+            # Don't modify any objects, only report those that were identified to update. If OutputFolderPath was specified a csv report is produced, otherwise the report data objects are output to the pipeline.
             [switch]$OnlyReport
             ,
             # Export CSV files to the OutputFolderPath with the success and failure results
