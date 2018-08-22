@@ -155,7 +155,7 @@ function Set-AttributeValue
                         WriteLog -Message $message -EntryType Failed -ErrorLog -Verbose
                         throw "Failed to get AD Domain $DomainFQDN"
                     }
-                }# End EntireForest
+                }# End EntireDomain
                 'Identity'
                 {
                     if ($ExportResults)
@@ -197,7 +197,8 @@ function Set-AttributeValue
                         {
                             Try
                             {
-                                $GetADObjectParams.Identity = $id
+                                $GetADObjectParams.Filter = "SAMAccountName -eq '$id' -or DistinguishedName -eq '$id' -or ObjectGUID -eq '$id'"
+                                #$GetADObjectParams.Identity = $id
                                 #Get the object first in order to get/verify the object's domain
                                 $TempADObject = Get-ADObject @GetADObjectParams | Select-Object -ExcludeProperty Item,Property* -Property *,@{n='Domain';e={GetAdObjectDomain -adobject $_ -ErrorAction Stop}}
                                 $GetADObjectParams.Server = $TempADObject.Domain
